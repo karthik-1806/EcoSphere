@@ -3,7 +3,13 @@
 import React, { createContext, useState, useCallback, useMemo, useEffect } from "react";
 import { CarbonEntry, CarbonTarget, UserSettings } from "@/types";
 import { safeStorageParser, saveToStorage } from "@/lib/utils";
-import { CarbonEntrySchema, CarbonTargetSchema, UserSettingsSchema, GoalSchema, ChallengeSchema } from "@/lib/schemas";
+import {
+  CarbonEntrySchema,
+  CarbonTargetSchema,
+  UserSettingsSchema,
+  GoalSchema,
+  ChallengeSchema
+} from "@/lib/schemas";
 import { z } from "zod";
 import { INITIAL_USER_SETTINGS, DEFAULT_TARGETS } from "@/lib/constants";
 
@@ -44,7 +50,15 @@ const defaultTargetsList: readonly CarbonTarget[] = [
   { targetValue: DEFAULT_TARGETS.waste, category: "waste", interval: "weekly" }
 ];
 
-export function AppProvider({ children }: Readonly<{ children: React.ReactNode }>) {
+/**
+ * Context provider for managing the global carbon footprint state.
+ * Initializes from localStorage and synchronizes updates automatically.
+ * @param props - Component props containing children
+ * @returns The populated context provider wrapping the application
+ */
+export function AppProvider({
+  children
+}: Readonly<{ children: React.ReactNode }>): React.JSX.Element {
   const [entries, setEntries] = useState<readonly CarbonEntry[]>([]);
   const [targets, setTargets] = useState<readonly CarbonTarget[]>(defaultTargetsList);
   const [settings, setSettings] = useState<UserSettings>(INITIAL_USER_SETTINGS);
@@ -144,18 +158,34 @@ export function AppProvider({ children }: Readonly<{ children: React.ReactNode }
     setChallenges((prev) => prev.map((c) => (c.id === id ? { ...c, completed: true } : c)));
   }, []);
 
-  const stateWithExtras = useMemo<FootprintState>(() => ({ entries, targets, settings, goals, challenges }), [entries, targets, settings, goals, challenges]);
-  const dispatchVal = useMemo<FootprintDispatch>(() => ({
-    addEntry,
-    deleteEntry,
-    updateTarget,
-    updateSettings,
-    resetAll,
-    addGoal,
-    toggleGoalActive,
-    addChallenge,
-    completeChallenge
-  }), [addEntry, deleteEntry, updateTarget, updateSettings, resetAll, addGoal, toggleGoalActive, addChallenge, completeChallenge]);
+  const stateWithExtras = useMemo<FootprintState>(
+    () => ({ entries, targets, settings, goals, challenges }),
+    [entries, targets, settings, goals, challenges]
+  );
+  const dispatchVal = useMemo<FootprintDispatch>(
+    () => ({
+      addEntry,
+      deleteEntry,
+      updateTarget,
+      updateSettings,
+      resetAll,
+      addGoal,
+      toggleGoalActive,
+      addChallenge,
+      completeChallenge
+    }),
+    [
+      addEntry,
+      deleteEntry,
+      updateTarget,
+      updateSettings,
+      resetAll,
+      addGoal,
+      toggleGoalActive,
+      addChallenge,
+      completeChallenge
+    ]
+  );
 
   return (
     <FootprintStateContext.Provider value={stateWithExtras}>

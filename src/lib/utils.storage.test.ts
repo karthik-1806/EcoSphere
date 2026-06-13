@@ -1,5 +1,12 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { safeJsonParse, stripDangerousKeys, safeStorageParser, saveToStorage, STORAGE_VERSION, generateUuid } from "./utils";
+import {
+  safeJsonParse,
+  stripDangerousKeys,
+  safeStorageParser,
+  saveToStorage,
+  STORAGE_VERSION,
+  generateUuid
+} from "./utils";
 import { z } from "zod";
 
 describe("utils storage and safety helpers", () => {
@@ -15,7 +22,11 @@ describe("utils storage and safety helpers", () => {
   });
 
   it("stripDangerousKeys removes prototype pollution vectors", () => {
-    const polluted: Record<string, unknown> = { good: 1, __proto__: { polluted: true }, nested: { constructor: { evil: true }, ok: 2 } };
+    const polluted: Record<string, unknown> = {
+      good: 1,
+      __proto__: { polluted: true },
+      nested: { constructor: { evil: true }, ok: 2 }
+    };
     const cleaned = stripDangerousKeys(polluted) as Record<string, unknown>;
     expect(cleaned.good).toBe(1);
     // Ensure prototype pollution did not inject properties onto the prototype
@@ -54,7 +65,9 @@ describe("utils storage and safety helpers", () => {
   it("saveToStorage swallows storage exceptions", () => {
     const key = "quota_test";
     const original = window.localStorage.setItem;
-    window.localStorage.setItem = ((): never => { throw new Error("quota"); }) as (key: string, value: string) => void;
+    window.localStorage.setItem = ((): never => {
+      throw new Error("quota");
+    }) as (key: string, value: string) => void;
     expect(() => saveToStorage(key, { a: 1 })).not.toThrow();
     // restore
     window.localStorage.setItem = original;

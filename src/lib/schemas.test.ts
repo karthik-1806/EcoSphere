@@ -43,8 +43,12 @@ describe("Validation Schemas", () => {
     });
 
     it("rejects invalid UUIDs and Dates", () => {
-      expect(CarbonEntrySchema.safeParse({ ...validEntry, id: "invalid-uuid" }).success).toBe(false);
-      expect(CarbonEntrySchema.safeParse({ ...validEntry, date: "not-a-date" }).success).toBe(false);
+      expect(CarbonEntrySchema.safeParse({ ...validEntry, id: "invalid-uuid" }).success).toBe(
+        false
+      );
+      expect(CarbonEntrySchema.safeParse({ ...validEntry, date: "not-a-date" }).success).toBe(
+        false
+      );
     });
 
     it("rejects descriptions that exceed 100 characters", () => {
@@ -67,7 +71,9 @@ describe("Validation Schemas", () => {
 
     it("rejects non-positive targets", () => {
       expect(CarbonTargetSchema.safeParse({ ...validTarget, targetValue: 0 }).success).toBe(false);
-      expect(CarbonTargetSchema.safeParse({ ...validTarget, targetValue: -10 }).success).toBe(false);
+      expect(CarbonTargetSchema.safeParse({ ...validTarget, targetValue: -10 }).success).toBe(
+        false
+      );
     });
   });
 
@@ -84,7 +90,9 @@ describe("Validation Schemas", () => {
 
     it("rejects invalid options", () => {
       expect(UserSettingsSchema.safeParse({ ...validSettings, theme: "blue" }).success).toBe(false);
-      expect(UserSettingsSchema.safeParse({ ...validSettings, language: "de" }).success).toBe(false);
+      expect(UserSettingsSchema.safeParse({ ...validSettings, language: "de" }).success).toBe(
+        false
+      );
     });
   });
 

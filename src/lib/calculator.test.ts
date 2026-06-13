@@ -1,5 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { calculateEntryCarbon, computeBreakdown, percentageBreakdown, sustainabilityRating } from "./calculator";
+import {
+  calculateEntryCarbon,
+  computeBreakdown,
+  percentageBreakdown,
+  sustainabilityRating
+} from "./calculator";
 
 describe("Calculator", () => {
   it("calculates transport entry carbon", () => {
@@ -14,7 +19,14 @@ describe("Calculator", () => {
 
   it("computes breakdown and percentages", () => {
     const entries = [
-      { id: "1", category: "transport" as const, value: 0, description: "", date: "", carbonValue: 10 },
+      {
+        id: "1",
+        category: "transport" as const,
+        value: 0,
+        description: "",
+        date: "",
+        carbonValue: 10
+      },
       { id: "2", category: "food" as const, value: 0, description: "", date: "", carbonValue: 5 },
       { id: "3", category: "energy" as const, value: 0, description: "", date: "", carbonValue: 2 }
     ];

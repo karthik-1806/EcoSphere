@@ -4,12 +4,7 @@
  */
 
 import { describe, it, expect } from "vitest";
-import {
-  escapeHtml,
-  sanitizeText,
-  generateUuid,
-  safeJsonParse,
-} from "@/lib/utils";
+import { escapeHtml, sanitizeText, generateUuid, safeJsonParse } from "@/lib/utils";
 
 describe("Utils Additional Tests", () => {
   describe("escapeHtml scenarios", () => {
@@ -267,7 +262,12 @@ describe("Utils Additional Tests", () => {
 
     it("nested object", () => {
       const result = safeJsonParse('{"user":{"name":"Jane"}}');
-      if (result !== null && typeof result === "object" && !Array.isArray(result) && "user" in result) {
+      if (
+        result !== null &&
+        typeof result === "object" &&
+        !Array.isArray(result) &&
+        "user" in result
+      ) {
         const user = (result as Record<string, unknown>).user;
         if (user !== null && typeof user === "object" && !Array.isArray(user) && "name" in user) {
           expect((user as Record<string, unknown>).name).toBe("Jane");

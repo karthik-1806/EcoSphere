@@ -153,7 +153,7 @@ describe("AssessmentForm accessibility and sanitization", () => {
     // Click on a category tab (using aria-label)
     const energyTab = screen.getByRole("tab", { name: /energy category/i });
     fireEvent.click(energyTab);
-    
+
     // Option input and slider
     const option = screen.getByLabelText("Option input");
     fireEvent.change(option, { target: { value: "electricity" } });

@@ -197,7 +197,10 @@ export function generateUuid(): string {
  * Time Complexity: O(N) where N is the length of input
  * Space Complexity: O(1)
  */
-export function validateSecureInput(input: string, maxLength = 1000): { valid: boolean; error?: string } {
+export function validateSecureInput(
+  input: string,
+  maxLength = 1000
+): { valid: boolean; error?: string } {
   if (typeof input !== "string") {
     return { valid: false, error: "Input must be a string" };
   }

@@ -14,25 +14,33 @@ export default function DashboardPage() {
   // Normalize metrics safely for chart distributions or calculate fallback metrics
   const totalWeight = breakdown.total || 1;
   const metrics = [
-    { label: "Transport", value: breakdown.transport || 0, color: "bg-emerald-500", text: "text-emerald-400" },
+    {
+      label: "Transport",
+      value: breakdown.transport || 0,
+      color: "bg-emerald-500",
+      text: "text-emerald-400"
+    },
     { label: "Food", value: breakdown.food || 0, color: "bg-teal-500", text: "text-teal-400" },
     { label: "Energy", value: breakdown.energy || 0, color: "bg-cyan-500", text: "text-cyan-400" },
-    { label: "Waste", value: breakdown.waste || 0, color: "bg-indigo-500", text: "text-indigo-400" },
+    { label: "Waste", value: breakdown.waste || 0, color: "bg-indigo-500", text: "text-indigo-400" }
   ];
 
   return (
-    <main className="w-full max-w-7xl mx-auto px-6 py-10 space-y-8 fade-in">
-      
+    <main className="fade-in mx-auto w-full max-w-7xl space-y-8 px-6 py-10">
       {/* Console Subheader Branding */}
-      <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/[0.04] pb-6">
+      <header className="flex flex-col justify-between gap-4 border-b border-white/[0.04] pb-6 sm:flex-row sm:items-center">
         <div>
-          <span className="text-xs font-mono uppercase tracking-widest text-emerald-600">Telemetry Node // Console</span>
-          <h1 className="text-3xl font-black tracking-tight text-slate-900 mt-1">Analytics Dashboard</h1>
+          <span className="font-mono text-xs uppercase tracking-widest text-emerald-600">
+            Telemetry Node // Console
+          </span>
+          <h1 className="mt-1 text-3xl font-black tracking-tight text-slate-900">
+            Analytics Dashboard
+          </h1>
         </div>
         <div className="flex items-center gap-3">
-          <Link 
-            href="/assessment" 
-            className="px-4 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-semibold rounded-lg transition shadow-sm"
+          <Link
+            href="/assessment"
+            className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50"
           >
             + Update Assessment Logs
           </Link>
@@ -40,44 +48,56 @@ export default function DashboardPage() {
       </header>
 
       {/* Primary Analytical Workspace Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        
+      <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-12">
         {/* Left Column: Metrics & Graph Rings */}
-        <div className="lg:col-span-7 space-y-6">
+        <div className="space-y-6 lg:col-span-7">
           <CarbonScoreCard total={breakdown.total} />
           <AllocationRing metrics={metrics} totalWeight={totalWeight} />
         </div>
 
         {/* Right Column: AI Engine Diagnostics & System Insights */}
-        <div className="lg:col-span-5 h-full">
+        <div className="h-full lg:col-span-5">
           <InsightsList insights={insights} />
         </div>
-
       </div>
 
       <section aria-labelledby="dashboard-summary" className="card p-6">
-        <h2 id="dashboard-summary" className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-4 border-b border-slate-100 pb-3">
+        <h2
+          id="dashboard-summary"
+          className="mb-4 border-b border-slate-100 pb-3 text-xs font-bold uppercase tracking-widest text-slate-500"
+        >
           Dashboard Summary
         </h2>
 
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-            <p className="text-xs uppercase tracking-widest text-slate-500 mb-2">Active Goals</p>
-            <p className="text-2xl font-bold text-slate-900">{goals.filter((g) => g.active).length}</p>
+            <p className="mb-2 text-xs uppercase tracking-widest text-slate-500">Active Goals</p>
+            <p className="text-2xl font-bold text-slate-900">
+              {goals.filter((g) => g.active).length}
+            </p>
             <p className="mt-2 text-xs text-slate-500">of {goals.length}</p>
           </div>
           <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-            <p className="text-xs uppercase tracking-widest text-slate-500 mb-2">Goal Progress</p>
-            <p className="text-2xl font-bold text-slate-900">{goals.length ? Math.round(goals.reduce((sum, g) => sum + g.progress, 0) / goals.length) : 0}%</p>
+            <p className="mb-2 text-xs uppercase tracking-widest text-slate-500">Goal Progress</p>
+            <p className="text-2xl font-bold text-slate-900">
+              {goals.length
+                ? Math.round(goals.reduce((sum, g) => sum + g.progress, 0) / goals.length)
+                : 0}
+              %
+            </p>
             <p className="mt-2 text-xs text-slate-500">average completion</p>
           </div>
           <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-            <p className="text-xs uppercase tracking-widest text-slate-500 mb-2">Challenges Completed</p>
-            <p className="text-2xl font-bold text-slate-900">{challenges.filter((c) => c.completed).length}</p>
+            <p className="mb-2 text-xs uppercase tracking-widest text-slate-500">
+              Challenges Completed
+            </p>
+            <p className="text-2xl font-bold text-slate-900">
+              {challenges.filter((c) => c.completed).length}
+            </p>
             <p className="mt-2 text-xs text-slate-500">of {challenges.length}</p>
           </div>
           <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-            <p className="text-xs uppercase tracking-widest text-slate-500 mb-2">Target Nodes</p>
+            <p className="mb-2 text-xs uppercase tracking-widest text-slate-500">Target Nodes</p>
             <p className="text-2xl font-bold text-slate-900">{targets.length}</p>
             <p className="mt-2 text-xs text-slate-500">categories monitored</p>
           </div>
@@ -85,14 +105,22 @@ export default function DashboardPage() {
       </section>
 
       <section aria-labelledby="targets" className="card p-6">
-        <h2 id="targets" className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-4 border-b border-slate-100 pb-3">
+        <h2
+          id="targets"
+          className="mb-4 border-b border-slate-100 pb-3 text-xs font-bold uppercase tracking-widest text-slate-500"
+        >
           Target Summary
         </h2>
 
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
           {targets.map((target) => (
-            <div key={`${target.category}-${target.interval}`} className="rounded-2xl border border-slate-200 bg-white shadow-sm p-4">
-              <p className="text-xs uppercase tracking-widest text-slate-500 mb-2">{target.category}</p>
+            <div
+              key={`${target.category}-${target.interval}`}
+              className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
+            >
+              <p className="mb-2 text-xs uppercase tracking-widest text-slate-500">
+                {target.category}
+              </p>
               <p className="text-2xl font-bold text-slate-900">{target.targetValue}</p>
               <p className="mt-2 text-xs text-slate-500">{target.interval} target</p>
             </div>
@@ -101,53 +129,64 @@ export default function DashboardPage() {
       </section>
 
       {/* Middle Grid Panels: Goals & System Challenges */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="card p-1.5 border border-slate-200 bg-white rounded-3xl shadow-sm">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <div className="card rounded-3xl border border-slate-200 bg-white p-1.5 shadow-sm">
           <GoalsPanel />
         </div>
-        <div className="card p-1.5 border border-slate-200 bg-white rounded-3xl shadow-sm">
+        <div className="card rounded-3xl border border-slate-200 bg-white p-1.5 shadow-sm">
           <ChallengesPanel />
         </div>
       </div>
 
       {/* Lower Row Ledger Component: Time-Series Actions */}
       <section aria-labelledby="recent" className="card p-6">
-        <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-4">
+        <div className="mb-4 flex items-center justify-between border-b border-slate-100 pb-4">
           <h2 id="recent" className="text-xs font-bold uppercase tracking-widest text-slate-500">
             Historical Activity Ledger
           </h2>
-          <span className="text-[10px] font-mono text-slate-500 uppercase">showing latest 10 sequences</span>
+          <span className="font-mono text-[10px] uppercase text-slate-500">
+            showing latest 10 sequences
+          </span>
         </div>
-        
+
         <div className="overflow-x-auto">
-          <ul className="divide-y divide-slate-100 min-w-[500px]">
+          <ul className="min-w-[500px] divide-y divide-slate-100">
             {entries.slice(0, 10).map((e) => (
-              <li key={e.id} className="py-3.5 flex justify-between items-center group hover:bg-slate-50 px-2 -mx-2 rounded-lg transition-colors">
+              <li
+                key={e.id}
+                className="group -mx-2 flex items-center justify-between rounded-lg px-2 py-3.5 transition-colors hover:bg-slate-50"
+              >
                 <div className="flex items-center gap-4">
-                  <div className="px-2.5 py-1 rounded-md bg-white border border-slate-200 text-[10px] font-mono font-bold text-slate-600 uppercase tracking-wide group-hover:border-emerald-300 transition-colors shadow-sm">
+                  <div className="rounded-md border border-slate-200 bg-white px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-wide text-slate-600 shadow-sm transition-colors group-hover:border-emerald-300">
                     {e.category}
                   </div>
                   <div>
-                    <div className="text-xs font-bold text-slate-800 tracking-tight">{e.description}</div>
-                    <div className="text-[10px] text-slate-500 mt-0.5 font-medium">{new Date(e.date).toLocaleString()}</div>
+                    <div className="text-xs font-bold tracking-tight text-slate-800">
+                      {e.description}
+                    </div>
+                    <div className="mt-0.5 text-[10px] font-medium text-slate-500">
+                      {new Date(e.date).toLocaleString()}
+                    </div>
                   </div>
                 </div>
-                
+
                 <div className="text-right">
-                  <div className="text-xs font-mono font-black text-slate-900">{e.carbonValue} kg CO₂e</div>
-                  <div className="text-[10px] font-mono text-slate-500 mt-0.5">{e.value} units</div>
+                  <div className="font-mono text-xs font-black text-slate-900">
+                    {e.carbonValue} kg CO₂e
+                  </div>
+                  <div className="mt-0.5 font-mono text-[10px] text-slate-500">{e.value} units</div>
                 </div>
               </li>
             ))}
             {entries.length === 0 && (
-              <li className="py-8 text-center text-xs text-slate-500 font-medium">
-                No telemetry sequences detected. Initialize standard carbon calculation matrices to populate database rows.
+              <li className="py-8 text-center text-xs font-medium text-slate-500">
+                No telemetry sequences detected. Initialize standard carbon calculation matrices to
+                populate database rows.
               </li>
             )}
           </ul>
         </div>
       </section>
-
     </main>
   );
 }

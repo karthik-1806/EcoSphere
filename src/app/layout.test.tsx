@@ -4,7 +4,7 @@ import RootLayout from "./layout";
 describe("RootLayout", () => {
   it("renders children", () => {
     const result = RootLayout({
-      children: <div data-testid="child-element">Test Child</div>,
+      children: <div data-testid="child-element">Test Child</div>
     });
 
     expect(result.type).toBe("html");

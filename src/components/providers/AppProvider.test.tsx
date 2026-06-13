@@ -1,11 +1,7 @@
-import  { useContext } from "react";
+import { useContext } from "react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, act } from "@testing-library/react";
-import {
-  AppProvider,
-  FootprintStateContext,
-  FootprintDispatchContext
-} from "./AppProvider";
+import { AppProvider, FootprintStateContext, FootprintDispatchContext } from "./AppProvider";
 import { CarbonEntry, CarbonTarget } from "@/types";
 
 // Helper component to verify state and invoke mutations
@@ -48,7 +44,10 @@ function TestConsumer() {
       <button data-testid="btn-add" onClick={handleAdd}>
         Add Entry
       </button>
-      <button data-testid="btn-delete" onClick={() => dispatch.deleteEntry("a2e11ef6-750a-4f83-94a4-871f8a40dc49")}>
+      <button
+        data-testid="btn-delete"
+        onClick={() => dispatch.deleteEntry("a2e11ef6-750a-4f83-94a4-871f8a40dc49")}
+      >
         Delete Entry
       </button>
       <button data-testid="btn-target" onClick={handleUpdateTarget}>

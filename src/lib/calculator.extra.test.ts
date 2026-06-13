@@ -20,8 +20,22 @@ describe("calculator extra coverage", () => {
 
   it("computes breakdown and percentages including zero-total path", () => {
     const entries: readonly CarbonEntry[] = [
-      { id: "1", category: "transport", value: 1, description: "x", date: new Date().toISOString(), carbonValue: 5 },
-      { id: "2", category: "food", value: 1, description: "x", date: new Date().toISOString(), carbonValue: 5 }
+      {
+        id: "1",
+        category: "transport",
+        value: 1,
+        description: "x",
+        date: new Date().toISOString(),
+        carbonValue: 5
+      },
+      {
+        id: "2",
+        category: "food",
+        value: 1,
+        description: "x",
+        date: new Date().toISOString(),
+        carbonValue: 5
+      }
     ];
 
     const breakdown = computeBreakdown(entries);

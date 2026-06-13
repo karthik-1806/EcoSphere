@@ -14,7 +14,7 @@ describe("useFootprint Custom Hook", () => {
   it("throws an error when consumed outside of AppProvider context", () => {
     // Prevent vitest from logging the React warning on boundary test
     const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-    
+
     expect(() => renderHook(() => useFootprint())).toThrow(
       "useFootprint must be used within an AppProvider"
     );
@@ -25,7 +25,7 @@ describe("useFootprint Custom Hook", () => {
   describe("Carbon Math Calculations", () => {
     it("converts transport correctly based on sub-types", () => {
       const { result } = renderHook(() => useFootprint(), { wrapper: AppProvider });
-      
+
       expect(result.current.calculateCarbon("transport", 100, "car")).toBe(
         Number((100 * CARBON_MULTIPLIERS.transport.car).toFixed(2))
       );
@@ -40,7 +40,7 @@ describe("useFootprint Custom Hook", () => {
 
     it("converts food correctly based on sub-types", () => {
       const { result } = renderHook(() => useFootprint(), { wrapper: AppProvider });
-      
+
       expect(result.current.calculateCarbon("food", 5, "meat")).toBe(
         Number((5 * CARBON_MULTIPLIERS.food.meat).toFixed(2))
       );
@@ -55,7 +55,7 @@ describe("useFootprint Custom Hook", () => {
 
     it("converts energy correctly based on sub-types", () => {
       const { result } = renderHook(() => useFootprint(), { wrapper: AppProvider });
-      
+
       expect(result.current.calculateCarbon("energy", 200, "electricity")).toBe(
         Number((200 * CARBON_MULTIPLIERS.energy.electricity).toFixed(2))
       );
@@ -70,7 +70,7 @@ describe("useFootprint Custom Hook", () => {
 
     it("converts waste correctly based on sub-types", () => {
       const { result } = renderHook(() => useFootprint(), { wrapper: AppProvider });
-      
+
       expect(result.current.calculateCarbon("waste", 10, "recycled")).toBe(
         Number((10 * CARBON_MULTIPLIERS.waste.recycled).toFixed(2))
       );
@@ -244,7 +244,7 @@ describe("useFootprint Custom Hook", () => {
       });
 
       // Progress should now be 30%
-      expect(result.current.goals.find(g => g.id === "g-transport-1")?.progress).toBe(30);
+      expect(result.current.goals.find((g) => g.id === "g-transport-1")?.progress).toBe(30);
 
       // Add another transport entry of 80 kg CO2e (total 110 kg CO2e, exceeding targetValue 100)
       act(() => {
@@ -259,7 +259,7 @@ describe("useFootprint Custom Hook", () => {
       });
 
       // Progress should be capped at 100%
-      expect(result.current.goals.find(g => g.id === "g-transport-1")?.progress).toBe(100);
+      expect(result.current.goals.find((g) => g.id === "g-transport-1")?.progress).toBe(100);
     });
   });
 });

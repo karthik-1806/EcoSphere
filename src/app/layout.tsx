@@ -7,11 +7,11 @@ import { Footer } from "@/components/ui/Footer";
 export const metadata: Metadata = {
   title: "EcoSphere - Carbon Footprint Tracker",
   description: "Track, understand, and reduce your carbon footprint with actionable insights.",
-  authors: [{ name: "Karthik" }],
+  authors: [{ name: "Karthik" }]
 };
 
 export default function RootLayout({
-  children,
+  children
 }: Readonly<{
   children: React.ReactNode;
 }>) {
@@ -20,9 +20,7 @@ export default function RootLayout({
       <body className="h-full bg-[rgb(var(--bg))] text-slate-200 antialiased selection:bg-emerald-600 selection:text-slate-900">
         <AppProvider>
           <Header />
-          <div className="max-w-7xl mx-auto px-4 py-8">
-            {children}
-          </div>
+          <div className="mx-auto max-w-7xl px-4 py-8">{children}</div>
           <Footer />
         </AppProvider>
       </body>

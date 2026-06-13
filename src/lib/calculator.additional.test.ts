@@ -8,7 +8,7 @@ import {
   calculateEntryCarbon,
   computeBreakdown,
   percentageBreakdown,
-  sustainabilityRating,
+  sustainabilityRating
 } from "@/lib/calculator";
 import type { CarbonEntry, CarbonCategory } from "@/types";
 
@@ -153,8 +153,8 @@ describe("Calculator Extended Tests", () => {
           value: 100,
           carbonValue: 23,
           description: "test",
-          date: new Date().toISOString(),
-        },
+          date: new Date().toISOString()
+        }
       ];
       const result = computeBreakdown(entries);
       expect(result.transport).toBe(23);
@@ -169,7 +169,7 @@ describe("Calculator Extended Tests", () => {
           value: 1,
           carbonValue: 27,
           description: "test",
-          date: new Date().toISOString(),
+          date: new Date().toISOString()
         },
         {
           id: "2",
@@ -177,8 +177,8 @@ describe("Calculator Extended Tests", () => {
           value: 1,
           carbonValue: 27,
           description: "test",
-          date: new Date().toISOString(),
-        },
+          date: new Date().toISOString()
+        }
       ];
       const result = computeBreakdown(entries);
       expect(result.food).toBe(54);
@@ -192,7 +192,7 @@ describe("Calculator Extended Tests", () => {
           value: 100,
           carbonValue: 23,
           description: "test",
-          date: new Date().toISOString(),
+          date: new Date().toISOString()
         },
         {
           id: "2",
@@ -200,7 +200,7 @@ describe("Calculator Extended Tests", () => {
           value: 1,
           carbonValue: 27,
           description: "test",
-          date: new Date().toISOString(),
+          date: new Date().toISOString()
         },
         {
           id: "3",
@@ -208,7 +208,7 @@ describe("Calculator Extended Tests", () => {
           value: 100,
           carbonValue: 23.5,
           description: "test",
-          date: new Date().toISOString(),
+          date: new Date().toISOString()
         },
         {
           id: "4",
@@ -216,8 +216,8 @@ describe("Calculator Extended Tests", () => {
           value: 10,
           carbonValue: 1.5,
           description: "test",
-          date: new Date().toISOString(),
-        },
+          date: new Date().toISOString()
+        }
       ];
       const result = computeBreakdown(entries);
       expect(result.transport).toBe(23);
@@ -237,7 +237,7 @@ describe("Calculator Extended Tests", () => {
           value: Math.random() * 100,
           carbonValue: Math.random() * 50,
           description: "test",
-          date: new Date().toISOString(),
+          date: new Date().toISOString()
         };
       });
 
@@ -253,7 +253,7 @@ describe("Calculator Extended Tests", () => {
         value: 10,
         carbonValue: 2.3,
         description: "test",
-        date: new Date().toISOString(),
+        date: new Date().toISOString()
       }));
 
       const result = computeBreakdown(entries);
@@ -269,7 +269,7 @@ describe("Calculator Extended Tests", () => {
         food: 25,
         energy: 25,
         waste: 25,
-        total: 100,
+        total: 100
       };
       const result = percentageBreakdown(breakdown);
       expect(result.transport).toBe(25);
@@ -284,7 +284,7 @@ describe("Calculator Extended Tests", () => {
         food: 20,
         energy: 15,
         waste: 5,
-        total: 100,
+        total: 100
       };
       const result = percentageBreakdown(breakdown);
       expect(result.transport).toBe(60);
@@ -299,7 +299,7 @@ describe("Calculator Extended Tests", () => {
         food: 25,
         energy: 15,
         waste: 10,
-        total: 100,
+        total: 100
       };
       const result = percentageBreakdown(breakdown);
       const sum = result.transport + result.food + result.energy + result.waste;
@@ -312,7 +312,7 @@ describe("Calculator Extended Tests", () => {
         food: 0,
         energy: 0,
         waste: 0,
-        total: 0,
+        total: 0
       };
       const result = percentageBreakdown(breakdown);
       expect(result.transport).toBe(0);
@@ -324,7 +324,7 @@ describe("Calculator Extended Tests", () => {
         food: 3,
         energy: 1,
         waste: 1,
-        total: 100,
+        total: 100
       };
       const result = percentageBreakdown(breakdown);
       expect(result.transport).toBe(95);
@@ -405,7 +405,7 @@ describe("Calculator Extended Tests", () => {
           value: 100,
           carbonValue: 23,
           description: "commute",
-          date: new Date().toISOString(),
+          date: new Date().toISOString()
         },
         {
           id: "2",
@@ -413,8 +413,8 @@ describe("Calculator Extended Tests", () => {
           value: 2,
           carbonValue: 54,
           description: "meals",
-          date: new Date().toISOString(),
-        },
+          date: new Date().toISOString()
+        }
       ];
 
       const breakdown = computeBreakdown(entries);
@@ -434,7 +434,7 @@ describe("Calculator Extended Tests", () => {
           value: 50,
           carbonValue: 11.5,
           description: "morning drive",
-          date: new Date().toISOString(),
+          date: new Date().toISOString()
         },
         {
           id: "2",
@@ -442,7 +442,7 @@ describe("Calculator Extended Tests", () => {
           value: 50,
           carbonValue: 11.5,
           description: "evening drive",
-          date: new Date().toISOString(),
+          date: new Date().toISOString()
         },
         {
           id: "3",
@@ -450,7 +450,7 @@ describe("Calculator Extended Tests", () => {
           value: 3,
           carbonValue: 15.6,
           description: "meals",
-          date: new Date().toISOString(),
+          date: new Date().toISOString()
         },
         {
           id: "4",
@@ -458,8 +458,8 @@ describe("Calculator Extended Tests", () => {
           value: 10,
           carbonValue: 0.5,
           description: "household",
-          date: new Date().toISOString(),
-        },
+          date: new Date().toISOString()
+        }
       ];
 
       const breakdown = computeBreakdown(dailyEntries);
@@ -489,7 +489,7 @@ describe("Calculator Extended Tests", () => {
           value: 10,
           carbonValue: 2.3,
           description: "test",
-          date: new Date().toISOString(),
+          date: new Date().toISOString()
         }));
 
         const start = performance.now();

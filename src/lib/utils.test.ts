@@ -155,7 +155,10 @@ describe("Utility Suite", () => {
     });
 
     it("recovers if payload validation fails", () => {
-      const badEnvelope = { version: STORAGE_VERSION, payload: { username: 123, count: "not-int" } };
+      const badEnvelope = {
+        version: STORAGE_VERSION,
+        payload: { username: 123, count: "not-int" }
+      };
       window.localStorage.setItem("invalid-payload", JSON.stringify(badEnvelope));
       const result = safeStorageParser("invalid-payload", TestSchema, defaultData);
       expect(result).toEqual(defaultData);
