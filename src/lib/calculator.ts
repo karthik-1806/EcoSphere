@@ -4,10 +4,10 @@ import type { CarbonEntry } from "@/types";
 
 // Performance: Memoized multiplier lookups with default values
 const MULTIPLIER_DEFAULTS: Record<CarbonCategory, string> = {
-  "transport": "car",
-  "food": "balanced",
-  "energy": "electricity",
-  "waste": "landfill"
+  transport: "car",
+  food: "balanced",
+  energy: "electricity",
+  waste: "landfill"
 } as const;
 
 // Performance: Memoized multiplier lookups (reduces repeated lookups)
@@ -21,18 +21,27 @@ const MULTIPLIER_CACHE = new Map<CarbonCategory, Record<string, number>>([
 /**
  * Calculates carbon entry with memoized multiplier cache.
  * @optimized Uses cached multiplier lookups with preset defaults
+ * @param category - The carbon category
+ * @param value - The input value to calculate
+ * @param option - An optional subtype for specific multipliers
+ * @returns The calculated carbon value
  * Time Complexity: O(1) average case with cache
  * Space Complexity: O(1)
  */
-export function calculateEntryCarbon(category: CarbonCategory, value: number, option?: string): number {
+export function calculateEntryCarbon(
+  category: CarbonCategory,
+  value: number,
+  option?: string
+): number {
   const multipliers = MULTIPLIER_CACHE.get(category);
   if (!multipliers) return 0;
 
   const cleanOption = option?.trim().toLowerCase();
   const defaultKey = MULTIPLIER_DEFAULTS[category];
-  const factor = (cleanOption && cleanOption in multipliers)
-    ? multipliers[cleanOption as keyof typeof multipliers]
-    : multipliers[defaultKey as keyof typeof multipliers];
+  const factor =
+    cleanOption && cleanOption in multipliers
+      ? multipliers[cleanOption as keyof typeof multipliers]
+      : multipliers[defaultKey as keyof typeof multipliers];
 
   // Guard against undefined factor (should not happen with valid data, but type-safe)
   if (factor === undefined) return 0;
@@ -44,6 +53,8 @@ export function calculateEntryCarbon(category: CarbonCategory, value: number, op
 /**
  * Computes carbon breakdown by category.
  * @optimized Uses accumulator pattern (O(1) memory per category)
+ * @param entries - Array of recorded carbon entries
+ * @returns Object mapping each category to its total carbon value and an overall total
  * Time Complexity: O(N) where N is number of entries
  * Space Complexity: O(1)
  */
@@ -71,7 +82,9 @@ export function computeBreakdown(entries: readonly CarbonEntry[]) {
   }
 
   const total = Number(
-    Object.values(breakdown).reduce((sum, val) => sum + val, 0).toFixed(2)
+    Object.values(breakdown)
+      .reduce((sum, val) => sum + val, 0)
+      .toFixed(2)
   );
 
   return {
@@ -83,6 +96,8 @@ export function computeBreakdown(entries: readonly CarbonEntry[]) {
 /**
  * Computes percentage breakdown with zero-division safety.
  * @optimized Early return for zero total
+ * @param breakdown - The computed breakdown from computeBreakdown
+ * @returns Object mapping each category to its percentage of total emissions
  * Time Complexity: O(1)
  * Space Complexity: O(1)
  */
@@ -121,6 +136,8 @@ const RATING_THRESHOLDS = [
 /**
  * Calculates sustainability rating based on total carbon.
  * @optimized Uses precomputed thresholds array
+ * @param totalKg - Total carbon footprint in kg CO2e
+ * @returns The sustainability rating label and score
  * Time Complexity: O(1) with early termination
  * Space Complexity: O(1)
  */

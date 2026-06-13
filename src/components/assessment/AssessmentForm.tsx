@@ -11,6 +11,12 @@ import { generateUuid, sanitizeText, validateSecureInput } from "@/lib/utils";
 import type { CarbonEntry } from "@/types";
 import { useRouter } from "next/navigation";
 
+// Sub-components
+import CategoryTabs from "./CategoryTabs";
+import QuickPresets from "./QuickPresets";
+import AmountSlider from "./AmountSlider";
+import FormInput from "./FormInput";
+
 const FormSchema = z.object({
   category: z.enum(["transport", "food", "energy", "waste"]),
   value: z.number().positive().max(1000),
@@ -19,7 +25,10 @@ const FormSchema = z.object({
 });
 
 // Performance: Memoized presets to avoid recalculation
-const PRESETS: Record<CarbonCategory, readonly { readonly label: string; readonly value: number; readonly option?: string }[]> = {
+const PRESETS: Record<
+  CarbonCategory,
+  readonly { readonly label: string; readonly value: number; readonly option?: string }[]
+> = {
   transport: [
     { label: "Short drive (5km)", value: 5, option: "car" },
     { label: "Commute (20km)", value: 20, option: "car" },
@@ -41,6 +50,11 @@ const PRESETS: Record<CarbonCategory, readonly { readonly label: string; readonl
 
 const CATEGORIES: readonly CarbonCategory[] = ["transport", "food", "energy", "waste"] as const;
 
+/**
+ * Main form component for recording a carbon footprint entry.
+ * Integrates sub-components for category selection, value input, and submission.
+ * @returns JSX Element
+ */
 function AssessmentFormComponent() {
   const dispatch = useContext(FootprintDispatchContext);
   if (!dispatch) throw new Error("AssessmentForm must be used within AppProvider");
@@ -60,100 +74,115 @@ function AssessmentFormComponent() {
    * Time Complexity: O(N) where N is input length for sanitization
    * Space Complexity: O(1)
    */
-  const onSubmit = useCallback((e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
+  const onSubmit = useCallback(
+    (e: React.FormEvent) => {
+      e.preventDefault();
+      setError(null);
 
-    // Security: Input validation
-    const descValidation = validateSecureInput(description, 100);
-    if (!descValidation.valid) {
-      setError(descValidation.error ?? "Invalid description");
-      return;
-    }
+      // Security: Input validation
+      const descValidation = validateSecureInput(description, 100);
+      if (!descValidation.valid) {
+        setError(descValidation.error ?? "Invalid description");
+        return;
+      }
 
-    const optionValidation = validateSecureInput(option, 100);
-    if (!optionValidation.valid) {
-      setError(optionValidation.error ?? "Invalid option");
-      return;
-    }
+      const optionValidation = validateSecureInput(option, 100);
+      if (!optionValidation.valid) {
+        setError(optionValidation.error ?? "Invalid option");
+        return;
+      }
 
-    const parsed = FormSchema.safeParse({
-      category,
-      value,
-      option,
-      description
-    });
+      const parsed = FormSchema.safeParse({
+        category,
+        value,
+        option,
+        description
+      });
 
-    if (!parsed.success) {
-      setError(parsed.error.errors.map((x) => x.message).join(", "));
-      return;
-    }
+      if (!parsed.success) {
+        setError(parsed.error.errors.map((x) => x.message).join(", "));
+        return;
+      }
 
-    const carbonValue = calculateEntryCarbon(category, value, option);
+      const carbonValue = calculateEntryCarbon(category, value, option);
 
-    const entry = {
-      id: generateUuid(),
-      category,
-      value,
-      description: sanitizeText(description ?? ""),
-      date: new Date().toISOString(),
-      carbonValue
-    } as const;
+      const entry = {
+        id: generateUuid(),
+        category,
+        value,
+        description: sanitizeText(description ?? ""),
+        date: new Date().toISOString(),
+        carbonValue
+      } as const;
 
-    // Validate final shape
-    const validated = CarbonEntrySchema.safeParse(entry);
-    if (!validated.success) {
-      setError("Invalid entry data");
-      return;
-    }
+      // Validate final shape
+      const validated = CarbonEntrySchema.safeParse(entry);
+      if (!validated.success) {
+        setError("Invalid entry data");
+        return;
+      }
 
-    dispatch.addEntry(validated.data as unknown as CarbonEntry);
-    router.push("/dashboard");
+      dispatch.addEntry(validated.data as unknown as CarbonEntry);
+      router.push("/dashboard");
 
-    // Reset
-    setValue(10);
-    setOption("");
-    setDescription("");
-    setLiveCarbon(calculateEntryCarbon(category, 10, ""));
-  }, [category, value, option, description, dispatch, router]);
+      // Reset
+      setValue(10);
+      setOption("");
+      setDescription("");
+      setLiveCarbon(calculateEntryCarbon(category, 10, ""));
+    },
+    [category, value, option, description, dispatch, router]
+  );
 
   /**
    * Handles category tab change with memoization.
    * @optimized useCallback prevents re-binding
    */
-  const onCategoryChange = useCallback((newCategory: CarbonCategory) => {
-    setCategory(newCategory);
-    setLiveCarbon(calculateEntryCarbon(newCategory, value, option));
-  }, [value, option]);
+  const onCategoryChange = useCallback(
+    (newCategory: CarbonCategory) => {
+      setCategory(newCategory);
+      setLiveCarbon(calculateEntryCarbon(newCategory, value, option));
+    },
+    [value, option]
+  );
 
   /**
    * Applies preset values with input validation.
    * @optimized useCallback prevents re-binding
    */
-  const onPreset = useCallback((preset: { value: number; option?: string }) => {
-    setValue(preset.value);
-    const newOption = preset.option ?? "";
-    setOption(newOption);
-    setLiveCarbon(calculateEntryCarbon(category, preset.value, newOption));
-  }, [category]);
+  const onPreset = useCallback(
+    (preset: { value: number; option?: string }) => {
+      setValue(preset.value);
+      const newOption = preset.option ?? "";
+      setOption(newOption);
+      setLiveCarbon(calculateEntryCarbon(category, preset.value, newOption));
+    },
+    [category]
+  );
 
   /**
    * Updates slider value with carbon recalculation.
    * @optimized useCallback prevents re-binding
    */
-  const onSlider = useCallback((v: number) => {
-    setValue(v);
-    setLiveCarbon(calculateEntryCarbon(category, v, option));
-  }, [category, option]);
+  const onSliderChange = useCallback(
+    (v: number) => {
+      setValue(v);
+      setLiveCarbon(calculateEntryCarbon(category, v, option));
+    },
+    [category, option]
+  );
 
   /**
    * Updates option with carbon recalculation.
    * @optimized useCallback prevents re-binding
    */
-  const onOptionChange = useCallback((newOption: string) => {
-    setOption(newOption);
-    setLiveCarbon(calculateEntryCarbon(category, value, newOption));
-  }, [category, value]);
+  const onOptionChange = useCallback(
+    (newOption: string) => {
+      setOption(newOption);
+      setLiveCarbon(calculateEntryCarbon(category, value, newOption));
+    },
+    [category, value]
+  );
 
   /**
    * Updates description with security validation.
@@ -170,171 +199,128 @@ function AssessmentFormComponent() {
   const currentPresets = useMemo(() => PRESETS[category], [category]);
 
   return (
-    <form onSubmit={onSubmit} className="max-w-xl mx-auto card" aria-label="Carbon assessment form">
+    <form onSubmit={onSubmit} className="card mx-auto max-w-xl" aria-label="Carbon assessment form">
       <fieldset>
-        <legend className="block text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
-          <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-emerald-500"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+        <legend className="mb-4 block flex items-center gap-2 text-lg font-semibold text-slate-900">
+          <svg
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="text-emerald-500"
+          >
+            <path d="M12 20h9" />
+            <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
+          </svg>
           Log Your Carbon Action
-          <span className="text-sm font-normal text-slate-500 block w-full mt-1">Choose a category, add details, and see your impact.</span>
+          <span className="mt-1 block w-full text-sm font-normal text-slate-500">
+            Choose a category, add details, and see your impact.
+          </span>
         </legend>
 
-        {/* Category tabs with accessibility */}
-        <div id="action-categories" role="tablist" aria-label="Action categories" className="flex gap-2 mb-6">
-          {CATEGORIES.map((c) => (
-            <button
-              key={c}
-              type="button"
-              role="tab"
-              aria-controls="assessment-panel"
-              aria-selected={category === c}
-              aria-label={`${c} category`}
-              onClick={() => onCategoryChange(c)}
-              onKeyDown={(event) => {
-                if (event.key === "Enter" || event.key === " ") {
-                  event.preventDefault();
-                  onCategoryChange(c);
-                }
-              }}
-              className={`px-3 py-2 rounded capitalize transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 ${
-                category === c
-                  ? "bg-emerald-50 text-emerald-700 font-medium border border-emerald-200"
-                  : "text-slate-600 hover:text-slate-900 border border-slate-200 bg-white"
-              }`}
-            >
-              {c}
-            </button>
-          ))}
-        </div>
+        <CategoryTabs
+          categories={CATEGORIES}
+          currentCategory={category}
+          onCategoryChange={onCategoryChange}
+        />
 
         <div id="assessment-panel" role="tabpanel" aria-labelledby="action-categories">
-          {/* Quick presets */}
-          <div className="mb-4">
-          <span id="quick-presets-label" className="block text-sm font-bold text-slate-800 mb-2">Quick Presets</span>
-          <div className="flex gap-2 flex-wrap" role="group" aria-labelledby="quick-presets-label">
-            {currentPresets.map((p) => (
-              <button
-                key={p.label}
-                type="button"
-                onClick={() => onPreset(p)}
-                onKeyDown={(event) => {
-                  if (event.key === "Enter" || event.key === " ") {
-                    event.preventDefault();
-                    onPreset(p);
-                  }
-                }}
-                aria-label={`Preset: ${p.label}`}
-                className="px-3 py-1 rounded text-sm bg-white text-slate-700 border border-slate-200 hover:border-emerald-300 hover:text-emerald-700 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500 shadow-sm"
-              >
-                {p.label}
-              </button>
-            ))}
-          </div>
-        </div>
+          <QuickPresets presets={currentPresets} onPreset={onPreset} />
 
-        {/* Amount slider */}
-        <div className="mb-4">
-          <label htmlFor="amount-slider" className="block text-sm font-bold text-slate-800 mb-2">
-            Amount: <span className="text-emerald-600">{value}</span>
-          </label>
-          <input
-            id="amount-slider"
-            type="range"
-            min={0}
-            max={100}
-            value={value}
-            onChange={(e) => onSlider(Number(e.target.value))}
-            aria-label="Amount slider"
-            aria-valuemin={0}
-            aria-valuemax={100}
-            aria-valuenow={value}
-            className="w-full h-2 bg-[rgba(255,255,255,0.05)] rounded cursor-pointer"
-          />
-          <div className="flex justify-between text-xs text-slate-500 mt-1 font-medium">
-            <span>0</span>
-            <span>100</span>
-          </div>
-        </div>
+          <AmountSlider value={value} onSliderChange={onSliderChange} />
 
-        {/* Option input */}
-        <div className="mb-4">
-          <label htmlFor="option-input" className="block text-sm font-bold text-slate-800 mb-2">
-            Details <span className="text-xs font-normal text-slate-500">(auto-filled by presets)</span>
-          </label>
-          <input
+          <FormInput
             id="option-input"
-            type="text"
+            label="Details"
+            labelHint="(auto-filled by presets)"
             value={option}
-            onChange={(e) => onOptionChange(e.target.value)}
-            maxLength={100}
-            aria-label="Option input"
-            aria-describedby="option-hint"
-            className="w-full rounded border border-slate-200 px-3 py-2 bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all shadow-sm"
+            onChange={onOptionChange}
             placeholder="e.g., car, vegan, electricity"
+            hint="Refines carbon calculation"
+            ariaLabel="Option input"
           />
-          <p id="option-hint" className="text-xs text-slate-400 mt-1">
-            Refines carbon calculation
-          </p>
-        </div>
 
-        {/* Description input */}
-        <div className="mb-4">
-          <label htmlFor="description-input" className="block text-sm font-bold text-slate-800 mb-2">
-            Description <span className="text-xs font-normal text-slate-500">(optional)</span>
-          </label>
-          <input
+          <FormInput
             id="description-input"
-            type="text"
+            label="Description"
+            labelHint="(optional)"
             value={description}
-            onChange={(e) => onDescriptionChange(e.target.value)}
-            maxLength={100}
-            aria-label="Description input"
-            aria-describedby="description-hint"
-            className="w-full rounded border border-slate-200 px-3 py-2 bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all shadow-sm"
+            onChange={onDescriptionChange}
             placeholder="What action did you take?"
+            hint={`${description.length}/100 characters`}
+            ariaLabel="Description input"
           />
-          <p id="description-hint" className="text-xs text-slate-400 mt-1">
-            {description.length}/100 characters
-          </p>
-        </div>
 
-        {/* Live carbon preview */}
-        <div
-          className="mb-4 p-4 rounded bg-emerald-50/50 border border-emerald-100 flex items-center gap-4"
-          role="status"
-          aria-live="polite"
-          aria-atomic="true"
-        >
-          <div className="w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600">
-            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 22C12 22 20 18 20 12V5L12 2L4 5V12C4 18 12 22 12 22Z"/></svg>
-          </div>
-          <div>
-            <p className="text-sm text-slate-500">Estimated Carbon Impact</p>
-            <p className="text-2xl font-bold text-emerald-600">{liveCarbon} kg CO<sub className="text-sm">2</sub>e</p>
-            <p className="text-xs text-slate-400 mt-0.5">Great choice! Every action counts.</p>
-          </div>
-        </div>
-
-        {/* Error message */}
-        {error && (
+          {/* Live carbon preview */}
           <div
-            role="alert"
-            aria-live="assertive"
+            className="mb-4 flex items-center gap-4 rounded border border-emerald-100 bg-emerald-50/50 p-4"
+            role="status"
+            aria-live="polite"
             aria-atomic="true"
-            className="p-3 rounded bg-[rgba(225,29,72,0.1)] border border-[rgba(225,29,72,0.2)] text-rose-400 text-sm mb-4"
           >
-            {error}
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
+              <svg
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                stroke="none"
+              >
+                <path d="M12 22C12 22 20 18 20 12V5L12 2L4 5V12C4 18 12 22 12 22Z" />
+              </svg>
+            </div>
+            <div>
+              <p className="text-sm text-slate-500">Estimated Carbon Impact</p>
+              <p className="text-2xl font-bold text-emerald-600">
+                {liveCarbon} kg CO<sub className="text-sm">2</sub>e
+              </p>
+              <p className="mt-0.5 text-xs text-slate-400">Great choice! Every action counts.</p>
+            </div>
           </div>
-        )}
 
-        <button
-          type="submit"
-          aria-label="Submit carbon log"
-          className="w-full inline-flex items-center justify-center gap-2 rounded bg-emerald-700 px-4 py-3 text-white hover:bg-emerald-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-600 transition-all font-bold shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
-          Log Action
-        </button>
-      </div>
+          {/* Error message */}
+          {error && (
+            <div
+              role="alert"
+              aria-live="assertive"
+              aria-atomic="true"
+              className="mb-4 rounded border border-[rgba(225,29,72,0.2)] bg-[rgba(225,29,72,0.1)] p-3 text-sm text-rose-400"
+            >
+              {error}
+            </div>
+          )}
+
+          <button
+            type="submit"
+            aria-label="Submit carbon log"
+            className="inline-flex w-full items-center justify-center gap-2 rounded bg-emerald-700 px-4 py-3 font-bold text-white shadow-md transition-all hover:bg-emerald-800 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <svg
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z" />
+              <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12" />
+            </svg>
+            Log Action
+          </button>
+        </div>
       </fieldset>
     </form>
   );
