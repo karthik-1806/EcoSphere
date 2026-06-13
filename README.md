@@ -2,6 +2,8 @@
 
 **Track. Understand. Reduce. Your Carbon Footprint.**
 
+🚀 **Live Demo:** [https://ecosphere-ashen.vercel.app/](https://ecosphere-ashen.vercel.app/)
+
 [![TypeScript](https://img.shields.io/badge/TypeScript-%233178C6.svg?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Next.js](https://img.shields.io/badge/Next.js-%23000000.svg?logo=next.js&logoColor=white)](https://nextjs.org/)
 [![React](https://img.shields.io/badge/React-%2320232a.svg?logo=react&logoColor=%2361DAFB)](https://react.dev/)
