@@ -199,6 +199,17 @@ npm run type-check
 | Security | Validation Required |
 | Linting | Zero Errors |
 
+## CI/CD Pipeline
+
+EcoSphere is configured with continuous integration and continuous deployment pipelines to maintain high code quality and automate releases:
+
+- **GitHub Actions (CI)**: On every push and pull request to the `main` branch, a GitHub workflow automatically runs:
+  - Dependency installation (`npm ci`)
+  - Strict type checking (`npm run type-check`)
+  - Code linting (`npm run lint`)
+  - Automated test suite (`npm run test`)
+- **Vercel (CD)**: The application is continuously deployed to Vercel. Any pushes to the `main` branch that pass the CI pipeline will trigger an automatic production build and deployment to the live URL.
+
 ## PromptWar Evaluation Alignment
 
 | Category | Strategy |
